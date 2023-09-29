@@ -6,72 +6,77 @@ define("NumberLetters", "0123456789");
 define("SpeciaCharecters", "!@#$%^&*()_+");
 
 
-function getLowerCaseIndex($passWordLength, $uppercasePos)
-{
-    $pos = rand(0,$passWordLength-1);
 
-    if($pos != $uppercasePos){
+function getLowerCaseIndex(int $passWordLength, int $uppercasePos): int
+{
+    $pos = rand(0, $passWordLength);
+
+    if ($pos !== $uppercasePos) {
         return $pos;
+    } else {
+        return getLowerCaseIndex($passWordLength, $uppercasePos);
     }
-    getLowerCaseIndex($passWordLength, $uppercasePos);
 }
 
 
-function getNumberIndex($passWordLength, $uppercasePos, $lowercasePos)
+function getNumberIndex(int $passWordLength, int $uppercasePos, int $lowercasePos): int
 {
-    $pos = rand(0,$passWordLength-1);
+    $pos = rand(0, $passWordLength);
 
-    if($pos != $uppercasePos && $pos != $lowercasePos ){
+    if ($pos !== $uppercasePos && $pos !== $lowercasePos) {
         return $pos;
+    } else {
+        return getNumberIndex($passWordLength, $uppercasePos, $lowercasePos);
     }
-    getNumberIndex($passWordLength, $uppercasePos, $lowercasePos);
-}
-
-function getSpecialCharecterIndex($passWordLength, $uppercasePos, $lowercasePos, $numberPos)
-{
-    $pos = rand(0,$passWordLength-1);
-
-    if($pos != $uppercasePos && $pos != $lowercasePos  && $pos != $numberPos ){
-        return $pos;
-    }
-    getSpecialCharecterIndex($passWordLength, $uppercasePos, $lowercasePos, $numberPos);
 }
 
 
+function getSpecialCharecterIndex(int $passWordLength, int $uppercasePos, int $lowercasePos, int $numberPos): int
+{
+    $pos = rand(0, $passWordLength);
+
+    if ($pos !== $uppercasePos && $pos !== $lowercasePos && $pos !== $numberPos) {
+        return $pos;
+    } else {
+        return getSpecialCharecterIndex($passWordLength, $uppercasePos, $lowercasePos, $numberPos);
+    }
+}
 
 
-function generatePassword($length){
+
+
+function generatePassword(int $length){
     // parametere validation
 
     if($length<4){
         return "Password Length must be greater than 4";
     }
 
-    $AllCharecters = UpperCaseLetters + LowerCaseLetters + NumberLetters + SpeciaCharecters; 
+    $AllCharecters = UpperCaseLetters.LowerCaseLetters.NumberLetters.SpeciaCharecters; 
     $password = "";
     for($i=0; $i<$length; $i++){
         $index = rand(0, strlen($AllCharecters)-1);
-        $password .= UpperCaseLetters[$index];
+        $password .= $AllCharecters[$index];
     }    
     
     // force fully insert a Uppercase
-    $PasswordRandomIndex = rand(0,$length);
-    $UpperCaseRandomIndex = rand(0,UpperCaseLetters);
-    $password[$PasswordRandomIndex] = UpperCaseLetters[$UpperCaseRandomIndex];
+    $PasswordUpperCaseIndex = rand(0,$length-1);
+    $UpperCaseRandomIndex = rand(0,strlen(UpperCaseLetters)-1);
+    $password[$PasswordUpperCaseIndex] = UpperCaseLetters[$UpperCaseRandomIndex];
 
     // force fully insert a LowerCase
-    $PasswordRandomIndex = getLowerCaseIndex($length, $UpperCaseRandomIndex);
-    $LowerCaseIndex = rand(0,LowerCaseLetters);
-    $password[$PasswordRandomIndex] = LowerCaseLetters[$LowerCaseIndex];
+    $PasswordLowerCaseIndex = getLowerCaseIndex($length-1, $PasswordUpperCaseIndex);
+    $LowerCaseIndex = rand(0,strlen(LowerCaseLetters)-1);
+    $password[$PasswordLowerCaseIndex] = LowerCaseLetters[$LowerCaseIndex];
 
     // force fully insert a Number
-    $PasswordRandomIndex = getNumberIndex($length, $UpperCaseRandomIndex, $LowerCaseIndex);
-    $NumberRandomIndex = rand(0,NumberLetters);
-    $password[$PasswordRandomIndex] = NumberLetters[$NumberRandomIndex];
+    $PasswordNumberIndex = getNumberIndex($length-1, $PasswordUpperCaseIndex, $PasswordLowerCaseIndex);
+    $NumberRandomIndex = rand(0,strlen(NumberLetters)-1);
+    $password[$PasswordNumberIndex] = NumberLetters[$NumberRandomIndex];
 
     // force fully insert a Special Charecter
-    $PasswordRandomIndex = getSpecialCharecterIndex($length, $UpperCaseRandomIndex, $LowerCaseIndex, $NumberRandomIndex);
-    $SpeciaCharectersIndex = rand(0,SpeciaCharecters);
+    $PasswordRandomIndex = getSpecialCharecterIndex($length-1, $PasswordUpperCaseIndex, $PasswordLowerCaseIndex, $PasswordNumberIndex);
+    $SpeciaCharectersIndex = rand(0,strlen(SpeciaCharecters)-1);
     $password[$PasswordRandomIndex] = SpeciaCharecters[$SpeciaCharectersIndex];
 
     
@@ -79,7 +84,8 @@ function generatePassword($length){
 
 }
 
-echo generatePassword(5);
+//echo generatePassword(4);
+echo generatePassword(12);
 
 
 ?>
